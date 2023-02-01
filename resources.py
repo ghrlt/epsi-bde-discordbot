@@ -1,0 +1,7 @@
+class Colors:
+    SUCCESS = 0x00FF00
+    ERROR = 0xFF0000
+    WARNING = 0xFFA500
+    INFO = 0x0000FF
+
+    DISCORD = 0x2f3136
