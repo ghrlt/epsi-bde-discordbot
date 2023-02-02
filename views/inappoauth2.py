@@ -2,6 +2,7 @@ from __main__ import bot
 import env
 import apis
 import database
+import resources
 
 import discord
 
@@ -36,6 +37,7 @@ class OAuthInApp_Input_modal(discord.ui.Modal, title="Connexion à 360Learning |
         try:
             api.login(username, password)
         except api.UnableToLogin as e:
+            env.logger.debug("%s#%s (%i) failed to login: %s" % (interaction.user.name, interaction.user.discriminator, interaction.user.id, e))
             await interaction.followup.send(
                 content="`❌` %s. Veuillez réessayer." % e,
                 ephemeral=True
@@ -64,6 +66,9 @@ class OAuthInApp_Input_modal(discord.ui.Modal, title="Connexion à 360Learning |
             classe = 'SN1'
         elif classe == 'B2':
             classe = 'SN2'
+        elif classe == 'PROFS':
+            classe = 'Intervenant'
+            lastname = user['nom']
 
         try:
             await interaction.user.edit(nick="%s %s. | %s" % (firstname, lastname, classe))
@@ -89,7 +94,7 @@ class OAuthInApp_Input_modal(discord.ui.Modal, title="Connexion à 360Learning |
             embed=discord.Embed(
                 title="Vérification effectuée avec succès !",
                 description="Vous pouvez désormais accéder au serveur.",
-                color=env.COLOR_SUCCESS
+                color=resources.Colors.COLOR_SUCCESS
             ).set_footer(text="Rappel: Votre mot de passe n'a pas été sauvegardé."),
             ephemeral=True
         )
