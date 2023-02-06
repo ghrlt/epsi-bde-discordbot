@@ -47,6 +47,9 @@ EPSIAPI_USERSURL = config.get("EPSIAPI_USERSURL")
 if not EPSIAPI_USERSURL:
     raise ValueError("EPSIAPI_USERSURL is not set.")
 
+ASK_FOR_PASSWORD_ON_JOIN = config.get("ASK_FOR_PASSWORD_ON_JOIN", "False").lower() in ["true", "yes", "y", "1"]
+
+
 logger.info("App: %s | Env: %s | Log: %s", APP_NAME, ENVMODE, LOG_LEVEL)
 
 if not DISCORDBOT_TOKEN:

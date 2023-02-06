@@ -14,12 +14,13 @@ class OAuthInApp_Input_modal(discord.ui.Modal, title="Connexion à 360Learning |
         min_length=3,
         custom_id="in_app_oauth2_username_input"
     )
-    password = discord.ui.TextInput(
-        placeholder="(Votre mot de passe n'est pas sauvegardé !)",
-        label="Votre mot de passe 360Learning :",
-        min_length=10,
-        custom_id="in_app_oauth2_password_input"
-    )
+    if env.ASK_FOR_PASSWORD_ON_JOIN:
+        password = discord.ui.TextInput(
+            placeholder="(Votre mot de passe n'est pas sauvegardé !)",
+            label="Votre mot de passe 360Learning :",
+            min_length=10,
+            custom_id="in_app_oauth2_password_input"
+        )
 
     async def on_submit(self, interaction: discord.Interaction):
         env.logger.debug("%s#%s (%i) submited OAuthInApp form." % (interaction.user.name, interaction.user.discriminator, interaction.user.id))
@@ -30,22 +31,25 @@ class OAuthInApp_Input_modal(discord.ui.Modal, title="Connexion à 360Learning |
             for child in component['components']:
                 if child['custom_id'] == "in_app_oauth2_username_input":
                     username = child['value']
-                elif child['custom_id'] == "in_app_oauth2_password_input":
-                    password = child['value']
 
-        api = apis.WigorServices() #~ Might as well use ingenium API
-        try:
-            api.login(username, password)
-        except api.UnableToLogin as e:
-            env.logger.debug("%s#%s (%i) failed to login: %s" % (interaction.user.name, interaction.user.discriminator, interaction.user.id, e))
-            await interaction.followup.send(
-                content="`❌` %s. Veuillez réessayer." % e,
-                ephemeral=True
-            )
-            return
+                if env.ASK_FOR_PASSWORD_ON_JOIN:
+                    if child['custom_id'] == "in_app_oauth2_password_input":
+                        password = child['value']
+
+        if env.ASK_FOR_PASSWORD_ON_JOIN:
+            api = apis.WigorServices() #~ Might as well use ingenium API
+            try:
+                api.login(username, password)
+            except api.UnableToLogin as e:
+                env.logger.debug("%s#%s (%i) failed to login: %s" % (interaction.user.name, interaction.user.discriminator, interaction.user.id, e))
+                await interaction.followup.send(
+                    content="`❌` %s. Veuillez réessayer." % e,
+                    ephemeral=True
+                )
+                return
 
         #~ ~ ~/ Login was successful
-        env.logger.debug("%s#%s (%i) logged in successfully." % (interaction.user.name, interaction.user.discriminator, interaction.user.id))
+        env.logger.debug("%s#%s (%i) logged in successfully. w/ psw: %s" % (interaction.user.name, interaction.user.discriminator, interaction.user.id, env.ASK_FOR_PASSWORD_ON_JOIN))
         
         #~ ~ ~/ Save the user's credentials
         database.saveCredentials(interaction.user.id, 'global', username, None)
