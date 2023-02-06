@@ -98,7 +98,7 @@ class OAuthInApp_Input_modal(discord.ui.Modal, title="Connexion à 360Learning |
             embed=discord.Embed(
                 title="Vérification effectuée avec succès !",
                 description="Vous pouvez désormais accéder au serveur.",
-                color=resources.Colors.COLOR_SUCCESS
+                color=resources.Colors.SUCCESS
             ).set_footer(text="Rappel: Votre mot de passe n'a pas été sauvegardé."),
             ephemeral=True
         )
