@@ -63,13 +63,17 @@ class OAuthInApp_Input_modal(discord.ui.Modal, title="Connexion à 360Learning |
             )
             return
 
+        isApprenant = False
+
         firstname = user['prenom']
         lastname = user['nom'][0]
         classe = user['classe']
         if classe == 'B1':
             classe = 'SN1'
+            isApprenant = True
         elif classe == 'B2':
             classe = 'SN2'
+            isApprenant = True
         elif classe == 'PROFS':
             classe = 'Intervenant'
             lastname = user['nom']
@@ -91,6 +95,19 @@ class OAuthInApp_Input_modal(discord.ui.Modal, title="Connexion à 360Learning |
 
         if role:
             await interaction.user.add_roles(role)
+
+
+        #~ ~ ~/ Give apprenant access permissions to the user
+        if isApprenant:
+            role = guild.get_role(database.obtainConfiguration(guild.id, "studentsRole"))
+            if not role:
+                try:
+                    role = await guild.fetch_role(database.obtainConfiguration(guild.id, "studentsRole"))
+                except:
+                    env.logger.error("Guild: %i // Failed to obtain studentsRole.", guild.id)
+
+            if role:
+                await interaction.user.add_roles(role)
 
 
         #~ ~ ~/ Send a success message
