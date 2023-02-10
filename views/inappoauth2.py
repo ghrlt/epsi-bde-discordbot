@@ -59,6 +59,7 @@ class OAuthInApp_Input_modal(discord.ui.Modal, title="Connexion à 360Learning |
         if status != 200:
             await interaction.followup.send(
                 content="`❌` Une erreur est survenue lors de la récupération de vos informations. Veuillez réessayer.",
+                view=OAuthInAppFailed_view(),
                 ephemeral=True
             )
             return
@@ -123,6 +124,103 @@ class OAuthInApp_Input_modal(discord.ui.Modal, title="Connexion à 360Learning |
         #~ ~ ~/ Edit original welcome message
         await interaction.message.edit(view=None)
 
+class OAuthInApp_NotStudent_modal(discord.ui.Modal, title="Vérification"):
+    prenom = discord.ui.TextInput(        
+        placeholder="John",
+        label="Prénom :",
+        min_length=2,
+        custom_id="in_app_oauth2_not_student_prenom_input"
+    )
+    nom = discord.ui.TextInput(
+        placeholder="Doe",
+        label="Nom :",
+        min_length=2,
+        custom_id="in_app_oauth2_not_student_nom_input"
+    )
+    email = discord.ui.TextInput(
+        placeholder="prenom.nom@epsi.fr",
+        label="Email :",
+        min_length=3,
+        custom_id="in_app_oauth2_not_student_email_input"
+    )
+    role = discord.ui.TextInput(
+        placeholder="Administration, Intervenant, etc.",
+        label="Votre poste à l'école :",
+        min_length=1,
+        custom_id="in_app_oauth2_not_student_role_input"
+    )
+
+    async def on_submit(self, interaction: discord.Interaction):
+        env.logger.debug("%s#%s (%i) submited OAuthInApp NotStudent form." % (interaction.user.name, interaction.user.discriminator, interaction.user.id))
+
+        prenom = None
+        nom = None
+        email = None
+        role = None
+
+        for component in interaction.data['components']:
+            for child in component['components']:
+                if child['custom_id'] == "in_app_oauth2_not_student_prenom_input":
+                    prenom = child['value']
+
+                if child['custom_id'] == "in_app_oauth2_not_student_nom_input":
+                    nom = child['value']
+
+                if child['custom_id'] == "in_app_oauth2_not_student_email_input":
+                    email = child['value']
+
+                if child['custom_id'] == "in_app_oauth2_not_student_role_input":
+                    role = child['value']
+
+        if not prenom or not nom or not email or not role:
+            await interaction.response.send_message(
+                content="`❌` Veuillez remplir tous les champs.",
+                ephemeral=True
+            )
+            return
+
+
+        #~ ~ ~/ Save the user's infos
+        database.saveInfos(interaction.user.id, role, prenom, nom, email, None)
+
+        try:
+            await interaction.user.edit(nick="%s %s. | %s" % (prenom, nom.title()[0], role))
+        except discord.errors.Forbidden:
+            env.logger.warning("Guild: %i // Failed to rename user %s#%s (%i)." % (interaction.guild.id, interaction.user.name, interaction.user.discriminator, interaction.user.id))
+
+
+        #~ ~ ~/ Give guild access permissions to the user
+        guild = interaction.guild
+        role = guild.get_role(database.obtainConfiguration(guild.id, "verifiedRole"))
+        if not role:
+            try:
+                role = await guild.fetch_role(database.obtainConfiguration(guild.id, "verifiedRole"))
+            except:
+                env.logger.error("Guild: %i // Failed to obtain verifiedRole.", guild.id)
+
+        if role:
+            await interaction.user.add_roles(role)
+
+
+        #~ ~ ~/ Edit to a success message
+        await interaction.response.edit_message(
+            embed=discord.Embed(
+                title="Vérification effectuée avec succès !",
+                description="Vous pouvez désormais accéder au serveur.",
+                color=resources.Colors.SUCCESS
+            ),
+            view=None,
+            content=None
+        )
+
+        #~ ~ ~/ Edit original welcome message, which the current one is a reply to
+        msgId = interaction.message.reference.message_id
+        if msgId:
+            msg = await interaction.channel.fetch_message(msgId)
+            if msg:
+                await msg.edit(view=None)
+
+
 class OAuthInApp_view(discord.ui.View):
     def __init__(self, *, timeout=None):
         super().__init__(timeout=timeout)
@@ -138,3 +236,12 @@ class OAuthInApp_view(discord.ui.View):
 
         env.logger.debug("%s#%s (%i) clicked on OAuthInApp button." % (interaction.user.name, interaction.user.discriminator, interaction.user.id))
         await interaction.response.send_modal(OAuthInApp_Input_modal())
+
+class OAuthInAppFailed_view(discord.ui.View):
+    def __init__(self, *, timeout=None):
+        super().__init__(timeout=timeout)
+
+    @discord.ui.button(label="Pas un apprenant ?", emoji="🕵️", style=discord.ButtonStyle.primary, custom_id="in_app_oauth2_not_student_btn")
+    async def callback(self, interaction: discord.Interaction, button: discord.ui.Button):
+        env.logger.debug("%s#%s (%i) clicked on OAuthInApp_NotStudent button." % (interaction.user.name, interaction.user.discriminator, interaction.user.id))
+        await interaction.response.send_modal(OAuthInApp_NotStudent_modal())

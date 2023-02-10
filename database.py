@@ -24,6 +24,16 @@ def setup():
             password TEXT
         )
     ''')
+    DATABASE_CURSOR.execute('''
+        CREATE TABLE IF NOT EXISTS infos (
+            user_id INTEGER NOT NULL,
+            role TEXT NOT NULL,
+            firstname TEXT,
+            lastname TEXT,
+            email TEXT,
+            phone TEXT
+        )
+    ''')
 
     DATABASE_CONNECTION.commit()
 
@@ -100,5 +110,39 @@ def deleteCredentials(userId: int, app: str):
     DATABASE_CURSOR.execute(
         "DELETE FROM creds WHERE user_id = ? AND app = ?",
         (userId, app)
+    )
+    DATABASE_CONNECTION.commit()
+
+
+def saveInfos(userId: int, role: str|None, firstname: str|None, lastname: str|None, email: str|None, phone: str|None):
+    if obtainInfos(userId) is None:
+        DATABASE_CURSOR.execute(
+            "INSERT INTO infos (user_id, role, firstname, lastname, email, phone) VALUES (?, ?, ?, ?, ?, ?)",
+            (userId, role, firstname, lastname, email, phone)
+        )
+    else:
+        env.logger.debug("Overwriting info for user %i", userId)
+        DATABASE_CURSOR.execute(
+            "UPDATE infos SET role = ?, firstname = ?, lastname = ?, email = ?, phone = ? WHERE user_id = ?",
+            (role, firstname, lastname, email, phone, userId)
+        )
+
+    DATABASE_CONNECTION.commit()
+
+def obtainInfos(userId: int):
+    r = DATABASE_CURSOR.execute(
+        "SELECT role, firstname, lastname, email, phone FROM infos WHERE user_id = ?",
+        (userId,)
+    ).fetchone()
+
+    if r is None:
+        return None
+
+    return r
+
+def deleteInfos(userId: int):
+    DATABASE_CURSOR.execute(
+        "DELETE FROM infos WHERE user_id = ?",
+        (userId,)
     )
     DATABASE_CONNECTION.commit()
