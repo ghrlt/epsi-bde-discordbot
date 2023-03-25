@@ -1,0 +1,14 @@
+on:
+  push:
+    branches:
+    - master
+    
+jobs:
+  updateOnServer:
+    runs-on: self-hosted
+    steps:
+    - name: Pull latest changes
+      run: git pull
+
+    - name: Restart bot service
+      run: systemctl restart epsi-discord-bdewhi
