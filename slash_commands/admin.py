@@ -27,3 +27,19 @@ class Admin(app_commands.Group):
             files.append(discord.File(dbPath))
 
         await interaction.response.send_message(files=files, ephemeral=True)
+
+
+    @app_commands.command(name="sync", description="Sync bot app commands")
+    async def _sync(
+        self, interaction: discord.Interaction
+    ) -> None:
+        await interaction.response.defer(ephemeral=True)
+
+        synced = await bot.tree.sync()
+        synced += await bot.tree.sync(guild=interaction.guild)
+
+        msg = "No commands synced!"
+        if len(synced) > 0:
+            msg = "Successfully synced %i commands!" % len(synced)
+
+        await interaction.followup.send(content=msg,ephemeral=True)
