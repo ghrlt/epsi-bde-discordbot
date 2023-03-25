@@ -43,3 +43,5 @@ class Admin(app_commands.Group):
             msg = "Successfully synced %i commands!" % len(synced)
 
         await interaction.followup.send(content=msg,ephemeral=True)
+
+slash.add_command(Admin(name="admin", description="All bot administration slash commands"))
