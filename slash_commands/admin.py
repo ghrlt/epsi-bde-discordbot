@@ -1,6 +1,8 @@
 from __main__ import bot, slash
 import env
+import apis
 import utils
+import database
 
 import os
 import sys
@@ -106,6 +108,48 @@ class Admin(app_commands.Group):
 
         await interaction.followup.send(content=msg, ephemeral=True)
 
+    @app_commands.command(name="update_users", description="Force all users update")
+    async def _updateUsers(
+        self, interaction: discord.Interaction
+    ) -> None:
+        await interaction.response.defer(ephemeral=True)
+
+        for member in interaction.guild.members:
+
+            print("Updating %s" % member.name)
+            user = database.obtainCredentials(member.id, app="global")
+            if not user:
+                continue
+            try:
+                if member.nick.endswith('C1') or member.nick.endswith('C2'):
+                    continue
+            except:
+                continue
+
+            wigor = apis.WigorServices()
+            wigor.login(user[0], user[1])
+            try:
+                edt = wigor.fetchAndParse('10/01/2023', toJson=True)
+            except apis.WigorServices.CurrentlyOnHoliday:
+                continue
+
+            for day in edt.keys():
+                if not edt[day]:
+                    continue
+
+                classGrade = edt[day][0]['classGrade']
+                classLevel = classGrade['level']
+                classGroup = classGrade['group']
+
+                oldNick = member.nick or user[0].split('.')[0].title() + ' ' + user[0].split('.')[1][0].upper() + '.'
+                try:
+                    await member.edit(nick="%s | %s %s" % (oldNick.split('|')[0].strip(), classLevel, classGroup))
+                except discord.Forbidden:
+                    print("No permission to change nickname of %s" % member.name)
+
+
+        
+        await interaction.followup.send(content="Successfully updated users!", ephemeral=True)
 
 
 slash.add_command(Admin(name="admin", description="All bot administration slash commands"))

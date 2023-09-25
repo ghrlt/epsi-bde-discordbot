@@ -146,12 +146,28 @@ class WigorServices:
                 classObj.professor = ' '.join(professor)
             else:
                 classObj.professor = 'None'
+
+            if isinstance(br.nextSibling, bs4.element.NavigableString):
+                classObj.classGrade = {
+                    'full': br.nextSibling,
+                    'level': br.nextSibling.split()[0],
+                    'group': br.nextSibling.split()[-1],
+                    'parcours': br.nextSibling.split()[1],
+                    'school': br.nextSibling.split()[2],
+                    'place': br.nextSibling.split()[3],
+                    'year': br.nextSibling.split()[4]
+                }
+            else:
+                classObj.classGrade = {}
         else:
             classObj.professor = 'You'
 
 
         if _class.find('td', class_='TCSalle').text == "Salle:Aucune":
             classObj.place = ""
+            classObj.room = ""
+        elif _class.find('td', class_='TCSalle').text.startswith('Salle:M:'):
+            classObj.place = "Distanciel"
             classObj.room = ""
         else:
             classObj.place = _class.find('td', class_='TCSalle').text.split('(')[1].strip(')')
