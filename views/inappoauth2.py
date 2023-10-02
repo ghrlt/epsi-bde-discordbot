@@ -105,24 +105,39 @@ class OAuthInApp_Input_modal(discord.ui.Modal, title="Connexion à 360Learning |
             #~ Let's fetch class
             wigor = apis.WigorServices()
             wigor.login(username, None)
-            try:
-                edt = wigor.fetchAndParse('10/01/2023', toJson=True)
-                
-                for day in edt.keys():
-                    if not edt[day]:
-                        continue
 
-                    classGrade = edt[day][0]['classGrade']
-                    classLevel = classGrade['level']
-                    classGroup = classGrade['group']
+            def fetchAndParse(date: str, toJson: bool):
+                try:
+                    edt = wigor.fetchAndParse(date, toJson=toJson)
+                    
+                    for day in edt.keys():
+                        if not edt[day]:
+                            continue
 
-                    isApprenant = True
+                        classGrade = edt[day][0]['classGrade']
+                        classLevel = classGrade['level']
+                        classGroup = classGrade['group']
 
-            except apis.WigorServices.CurrentlyOnHoliday:
-                classLevel = '?'
-                classGroup = '?'
-                isApprenant = False
-            
+                        isApprenant = True
+
+                except apis.WigorServices.CurrentlyOnHoliday:
+                    classLevel = '?'
+                    classGroup = '?'
+                    isApprenant = False
+
+                return classGrade, classLevel, classGroup, isApprenant
+
+            classGrade, classLevel, classGroup, isApprenant = fetchAndParse('10/02/2023', toJson=True)
+            if classLevel == '?':
+                classGrade, classLevel, classGroup, isApprenant = fetchAndParse('10/09/2023', toJson=True)
+                if classLevel == '?':
+                    classGrade, classLevel, classGroup, isApprenant = fetchAndParse('10/16/2023', toJson=True)
+                    if classLevel == '?':
+                        classGrade, classLevel, classGroup, isApprenant = fetchAndParse('10/23/2023', toJson=True)
+                        if classLevel == '?':
+                            classGrade, classLevel, classGroup, isApprenant = fetchAndParse('10/30/2023', toJson=True)
+
+
             classe = "%s %s" % (classLevel, classGroup)
 
             

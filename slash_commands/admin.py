@@ -129,9 +129,18 @@ class Admin(app_commands.Group):
             wigor = apis.WigorServices()
             wigor.login(user[0], user[1])
             try:
-                edt = wigor.fetchAndParse('10/01/2023', toJson=True)
+                edt = wigor.fetchAndParse('10/02/2023', toJson=True)
             except apis.WigorServices.CurrentlyOnHoliday:
-                continue
+                try:
+                    edt = wigor.fetchAndParse('10/09/2023', toJson=True)
+                except apis.WigorServices.CurrentlyOnHoliday:
+                    try:
+                        edt = wigor.fetchAndParse('10/16/2023', toJson=True)
+                    except apis.WigorServices.CurrentlyOnHoliday:
+                        try:
+                            edt = wigor.fetchAndParse('10/23/2023', toJson=True)
+                        except apis.WigorServices.CurrentlyOnHoliday:
+                            continue
 
             for day in edt.keys():
                 if not edt[day]:
