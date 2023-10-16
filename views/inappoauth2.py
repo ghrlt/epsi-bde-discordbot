@@ -121,6 +121,7 @@ class OAuthInApp_Input_modal(discord.ui.Modal, title="Connexion à 360Learning |
                         isApprenant = True
 
                 except apis.WigorServices.CurrentlyOnHoliday:
+                    classGrade = '?'
                     classLevel = '?'
                     classGroup = '?'
                     isApprenant = False
