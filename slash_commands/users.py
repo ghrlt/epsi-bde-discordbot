@@ -28,12 +28,12 @@ class Users(app_commands.Group):
     @app_commands.command(name="set_infos", description="Set user infos")
     async def _setInfos(
         self, interaction: discord.Interaction,
-        user: discord.Member, firstName: str|None, lastName: str|None,
-        email: str|None, phoneNumber: str|None,
+        user: discord.Member, firstname: str|None, lastname: str|None,
+        email: str|None, phonenumber: str|None,
     ) -> None:
         await interaction.response.defer(ephemeral=True)
 
-        database.saveInfos(user.id, firstName, lastName, email, phoneNumber)
+        database.saveInfos(user.id, firstname, lastname, email, phonenumber)
 
         await interaction.followup.send(
             content="Successfully updated %s infos!" % (user.mention),
