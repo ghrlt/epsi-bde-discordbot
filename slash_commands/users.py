@@ -18,7 +18,7 @@ class Users(app_commands.Group):
     ) -> None:
         await interaction.response.defer(ephemeral=True)
 
-        database.saveCredentials(user.id, app, username)
+        database.saveCredentials(user.id, app, username, None)
 
         await interaction.followup.send(
             content="Successfully updated %s username for %s!" % (user.mention, app),

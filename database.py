@@ -88,10 +88,17 @@ def saveCredentials(userId: int, app: str, username: str, password: str|None):
         )
     else:
         env.logger.debug("Overwriting credentials for user %i and app %s", userId, app)
-        DATABASE_CURSOR.execute(
-            "UPDATE creds SET username = ?, password = ? WHERE user_id = ? AND app = ?",
-            (username, password, userId, app)
-        )
+
+        if password is None:
+            DATABASE_CURSOR.execute(
+                "UPDATE creds SET username = ? WHERE user_id = ? AND app = ?",
+                (username, userId, app)
+            )
+        else:
+            DATABASE_CURSOR.execute(
+                "UPDATE creds SET username = ?, password = ? WHERE user_id = ? AND app = ?",
+                (username, password, userId, app)
+            )
 
     DATABASE_CONNECTION.commit()
 
