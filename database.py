@@ -122,10 +122,32 @@ def saveInfos(userId: int, role: str|None, firstname: str|None, lastname: str|No
         )
     else:
         env.logger.debug("Overwriting info for user %i", userId)
-        DATABASE_CURSOR.execute(
-            "UPDATE infos SET role = ?, firstname = ?, lastname = ?, email = ?, phone = ? WHERE user_id = ?",
-            (role, firstname, lastname, email, phone, userId)
-        )
+
+        if role != None:
+            DATABASE_CURSOR.execute(
+                "UPDATE infos SET role = ? WHERE user_id = ?",
+                (role, userId)
+            )
+        if firstname != None:
+            DATABASE_CURSOR.execute(
+                "UPDATE infos SET firstname = ? WHERE user_id = ?",
+                (firstname, userId)
+            )
+        if lastname != None:
+            DATABASE_CURSOR.execute(
+                "UPDATE infos SET lastname = ? WHERE user_id = ?",
+                (lastname, userId)
+            )
+        if email != None:
+            DATABASE_CURSOR.execute(
+                "UPDATE infos SET email = ? WHERE user_id = ?",
+                (email, userId)
+            )
+        if phone != None:
+            DATABASE_CURSOR.execute(
+                "UPDATE infos SET phone = ? WHERE user_id = ?",
+                (phone, userId)
+            )
 
     DATABASE_CONNECTION.commit()
 
