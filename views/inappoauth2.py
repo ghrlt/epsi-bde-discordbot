@@ -179,7 +179,7 @@ class OAuthInApp_Input_modal(
             classe = "%s %s" % (classLevel, classGroup)
 
         else:
-            mailing = apis.MailingList()
+            mailing = apis.MailingList
             student = mailing.findStudent(firstname, lastname)
             if student:
                 classDetail = student["classe"]["classe"].replace("MTP", "").strip()
