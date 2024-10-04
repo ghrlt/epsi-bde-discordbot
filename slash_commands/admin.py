@@ -145,6 +145,9 @@ class Admin(app_commands.Group):
 
             else:
                 email = database.obtainEmail(member.id)
+                await interaction.followup.send(
+                    content="email==>%s" % email, ephemeral=True
+                )
                 if not email:
                     continue
 
