@@ -64,12 +64,12 @@ class UpdateMemberData_modal(discord.ui.Modal, title="Synchronisation | Email re
 
         try:
             await interaction.user.edit(
-                nick="%s %s. | %s"[0:32]
+                nick="%s %s. | %s"
                 % (
                     student["firstname"].title(),
                     student["lastname"][0].upper(),
                     classe,
-                )
+                )[0:32]
             )
         except discord.errors.Forbidden:
             env.logger.warning(
