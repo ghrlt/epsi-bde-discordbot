@@ -49,7 +49,7 @@ class UpdateMemberData_modal(discord.ui.Modal, title="Synchronisation | Email re
 
             classe = "%s %s %s" % (
                 student["classe"]["level"],
-                student["classe"]["type"],
+                student["classe"]["type"].replace("ALT", "").replace("INI", "").strip(),
                 classDetail,
             )
             email = student["email"]
@@ -62,14 +62,12 @@ class UpdateMemberData_modal(discord.ui.Modal, title="Synchronisation | Email re
             return
 
         try:
-            await interaction.user.edit(
-                nick="%s %s. | %s"
-                % (
-                    student["firstname"].title(),
-                    student["lastname"][0].upper(),
-                    classe,
-                )[0:32]
+            pseudo = "%s %s. | %s" % (
+                student["firstname"].title(),
+                student["lastname"][0].upper(),
+                classe,
             )
+            await interaction.user.edit(nick=pseudo[:32])
         except discord.errors.Forbidden:
             env.logger.warning(
                 "Guild: %i // Failed to rename user %s#%s (%i)."

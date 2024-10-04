@@ -202,10 +202,12 @@ class OAuthInApp_Input_modal(
                 return
 
         try:
-            await interaction.user.edit(
-                nick="%s %s. | %s"
-                % (firstname.title(), lastname[0].upper(), classe)[0:32]
+            pseudo = "%s %s. | %s" % (
+                firstname.title(),
+                lastname[0].upper(),
+                classe,
             )
+            await interaction.user.edit(nick=pseudo[:32])
         except discord.errors.Forbidden:
             env.logger.warning(
                 "Guild: %i // Failed to rename user %s#%s (%i)."
