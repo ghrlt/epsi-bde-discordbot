@@ -148,8 +148,8 @@ class Admin(app_commands.Group):
                 if not email:
                     continue
 
-                mailing = apis.MailingList()
-                student = mailing.findStudentByEmail(email[0])
+                mailing = apis.MailingList
+                student = mailing.findStudentByEmail(email)
                 try:
                     classDetail = student["classe"]["classe"].replace("MTP", "").strip()
                     if classDetail != "":
