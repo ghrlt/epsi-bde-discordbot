@@ -64,7 +64,7 @@ class UpdateMemberData_modal(discord.ui.Modal, title="Synchronisation | Email re
 
         try:
             await interaction.user.edit(
-                nick="%s %s. | %s"
+                nick="%s %s. | %s"[0:32]
                 % (
                     student["firstname"].title(),
                     student["lastname"][0].upper(),
@@ -144,20 +144,6 @@ class UpdateMemberData_view(discord.ui.View):
     async def handleClick(
         self, interaction: discord.Interaction, button: discord.ui.Button
     ):
-        env.logger.debug(
-            "Guild: %i // %s#%s (%i) clicked on %s"
-            % (
-                interaction.guild.id,
-                interaction.user.name,
-                interaction.user.discriminator,
-                interaction.user.id,
-                button.custom_id,
-            )
-        )
-
-        member = interaction.user
-        member_id = member.id
-
         # ~ Ask for email, in a form view
         await interaction.response.send_modal(UpdateMemberData_modal())
 

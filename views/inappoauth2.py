@@ -203,7 +203,8 @@ class OAuthInApp_Input_modal(
 
         try:
             await interaction.user.edit(
-                nick="%s %s. | %s" % (firstname.title(), lastname[0].upper(), classe)
+                nick="%s %s. | %s"[0:32]
+                % (firstname.title(), lastname[0].upper(), classe)
             )
         except discord.errors.Forbidden:
             env.logger.warning(
