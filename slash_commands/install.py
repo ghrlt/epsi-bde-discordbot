@@ -29,7 +29,7 @@ async def _install(
             await channel.send(view=views.choosegamebtns.ChooseGameButtons_view())
 
         case "updateMemberDataButton":
-            await channel.send(view=views.updatedata.UpdateMemberData_modal())
+            await channel.send(view=views.updatedata.UpdateMemberData_view())
 
         case _:
             await interaction.response.send_message(
