@@ -57,7 +57,6 @@ class UpdateMemberData_modal(discord.ui.Modal, title="Synchronisation | Email re
         else:
             await interaction.followup.send(
                 content="`❌` Une erreur est survenue lors de la récupération de vos informations. Veuillez réessayer.",
-                view=UpdateMemberData_modal(),
                 ephemeral=True,
             )
             return
