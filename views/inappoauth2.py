@@ -84,6 +84,7 @@ class OAuthInApp_Input_modal(
                 )
                 return
 
+<<<<<<< HEAD
         # ~ ~ ~/ Login was successful
         env.logger.debug(
             "%s#%s (%i) logged in successfully. w/ psw: %s"
@@ -94,6 +95,13 @@ class OAuthInApp_Input_modal(
                 env.ASK_FOR_PASSWORD_ON_JOIN,
             )
         )
+=======
+        #~ ~ ~/ Login was successful
+        env.logger.debug("%s#%s (%i) logged in successfully. w/ psw: %s" % (interaction.user.name, interaction.user.discriminator, interaction.user.id, env.ASK_FOR_PASSWORD_ON_JOIN))
+
+        #~ ~ ~/ Save the user's credentials
+        database.saveCredentials(interaction.user.id, 'global', username, None)
+>>>>>>> 5928535 (fix)
 
         # ~ ~ ~/ Save the user's credentials
         database.saveCredentials(interaction.user.id, "global", username, None)
@@ -130,6 +138,11 @@ class OAuthInApp_Input_modal(
             wigor.login(username, None)
 
             def fetchAndParse(date: str, toJson: bool):
+                classGrade = '?'
+                classLevel = '?'
+                classGroup = '?'
+                isApprenant = False
+
                 try:
                     edt = wigor.fetchAndParse(date, toJson=toJson)
 
@@ -151,6 +164,7 @@ class OAuthInApp_Input_modal(
 
                 return classGrade, classLevel, classGroup, isApprenant
 
+<<<<<<< HEAD
             classGrade, classLevel, classGroup, isApprenant = fetchAndParse(
                 "10/02/2023", toJson=True
             )
@@ -170,6 +184,18 @@ class OAuthInApp_Input_modal(
                             classGrade, classLevel, classGroup, isApprenant = (
                                 fetchAndParse("10/30/2023", toJson=True)
                             )
+=======
+            classGrade, classLevel, classGroup, isApprenant = fetchAndParse('01/10/2024', toJson=True)
+            if classLevel == '?':
+                classGrade, classLevel, classGroup, isApprenant = fetchAndParse('08/10/2024', toJson=True)
+                if classLevel == '?':
+                    classGrade, classLevel, classGroup, isApprenant = fetchAndParse('15/10/2024', toJson=True)
+                    if classLevel == '?':
+                        classGrade, classLevel, classGroup, isApprenant = fetchAndParse('22/10/2024', toJson=True)
+                        if classLevel == '?':
+                            classGrade, classLevel, classGroup, isApprenant = fetchAndParse('27/10/2024', toJson=True)
+
+>>>>>>> 5928535 (fix)
 
             classe = "%s %s" % (classLevel, classGroup)
 
@@ -410,6 +436,7 @@ class OAuthInAppFailed_view(discord.ui.View):
     def __init__(self, *, timeout=None):
         super().__init__(timeout=timeout)
 
+<<<<<<< HEAD
     @discord.ui.button(
         label="Pas un apprenant ?",
         emoji="🕵️",
@@ -427,4 +454,9 @@ class OAuthInAppFailed_view(discord.ui.View):
                 interaction.user.id,
             )
         )
+=======
+    @discord.ui.button(label="Pas un apprenant ?", emoji="🕵️", style=discord.ButtonStyle.primary, custom_id="in_app_oauth2_not_student_btn")
+    async def callback(self, interaction: discord.Interaction, button: discord.ui.Button):
+        env.logger.debug("%s#%s (%i) clicked on OAuthInApp_NotStudent button." % (interaction.user.name, interaction.user.discriminator, interaction.user.id))
+>>>>>>> 5928535 (fix)
         await interaction.response.send_modal(OAuthInApp_NotStudent_modal())
