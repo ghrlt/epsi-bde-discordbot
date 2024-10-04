@@ -18,8 +18,6 @@ class MailingList:
             sLastname = sanitize(student["lastname"].lower())
             sFirstname = sanitize(student["firstname"].lower())
 
-            print("OK", sFirstname, firstname)
-
             if lastname == sLastname and firstname == sFirstname:
                 print(
                     "Found student (%s %s) in mailing list (%s %s)"
