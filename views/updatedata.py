@@ -129,15 +129,12 @@ class UpdateMemberData_modal(discord.ui.Modal, title="Synchronisation | Email re
         # ~ ~ ~/ Send a success message
         await interaction.followup.send(
             embed=discord.Embed(
-                title="Vérification effectuée avec succès !",
-                description="Vous pouvez désormais accéder au serveur.",
+                title="Synchronisation effectuée avec succès !",
+                description="Vos informations ont bien été mise à jour",
                 color=resources.Colors.SUCCESS,
-            ).set_footer(text="Rappel: Votre mot de passe n'a pas été sauvegardé."),
+            ),
             ephemeral=True,
         )
-
-        # ~ ~ ~/ Edit original welcome message
-        await interaction.message.edit(view=None)
 
 
 class UpdateMemberData_view(discord.ui.View):
