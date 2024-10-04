@@ -191,6 +191,7 @@ class OAuthInApp_Input_modal(
                     student["classe"]["type"],
                     classDetail,
                 )
+                email = student["email"]
                 isApprenant = True
             else:
                 await interaction.followup.send(
@@ -216,7 +217,9 @@ class OAuthInApp_Input_modal(
             )
 
         # ~ ~ ~/ Save the user's infos
-        database.saveInfos(interaction.user.id, classe, firstname, lastname, None, None)
+        database.saveInfos(
+            interaction.user.id, classe, firstname, lastname, email, None
+        )
 
         # ~ ~ ~/ Give guild access permissions to the user
         guild = interaction.guild
