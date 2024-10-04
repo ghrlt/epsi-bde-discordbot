@@ -144,7 +144,7 @@ class Admin(app_commands.Group):
                     classGroup = classGrade["group"]
 
             else:
-                email = database.obtainEmail(member.id, app="global")
+                email = database.obtainEmail(member.id)
                 if not email:
                     continue
 
