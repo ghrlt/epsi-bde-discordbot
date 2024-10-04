@@ -28,3 +28,10 @@ class MailingList:
                 return student
 
         return None
+
+    def findStudentByEmail(email: str):
+        for student in MailingList.data:
+            if email == student["email"]:
+                return student
+
+        return None
